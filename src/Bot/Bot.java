@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class Bot extends TelegramLongPollingBot {
     Commands commands = new Commands();
+    Chats chats = new Chats();
 
     public static void main(String[] args) {
         ApiContextInitializer.init();
@@ -36,8 +37,8 @@ public class Bot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String userMessage = update.getMessage().getText();
-            String messageText = commands.getFromCommand(userMessage);
             long chatId = update.getMessage().getChatId();
+            String messageText = commands.getFromCommand(userMessage, chatId);
 
             SendMessage message = new SendMessage()
                     .setChatId(chatId)

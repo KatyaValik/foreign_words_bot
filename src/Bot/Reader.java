@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Random;
 
 public class Reader {
-    private final int max = Integer.parseInt(this.readStringFromWords(true));
+    private static final int max = Integer.parseInt(getStringFromWords(true));
     private static List<String> words = readAllWords();
 
     public static List<String> readAllWords(){
@@ -40,7 +40,7 @@ public class Reader {
         return token;
     }
 
-    public String readStringFromWords(boolean first)
+    public static String getStringFromWords(boolean first)
     {
         String line = "";
         if (first){
@@ -54,7 +54,7 @@ public class Reader {
         return line;
     }
 
-    public String readToLine(int lineNumber){
+    public static String readToLine(int lineNumber){
         String toWords = ".\\src\\Bot\\words.txt";
         String line = "";
         BufferedReader reader;
@@ -70,5 +70,9 @@ public class Reader {
             e.printStackTrace();
         }
         return line;
+    }
+
+    public int getMax(){
+        return max;
     }
 }
