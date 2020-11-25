@@ -55,8 +55,36 @@ public class DbHandler {
 
     public void deleteWord(String word) {
         try (PreparedStatement statement = this.connection.prepareStatement(
-                "DELETE FROM Products WHERE word = ?")) {
+                "DELETE FROM words WHERE word = ?")) {
             statement.setObject(1, word);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<String> getWordsFromUser(Long userId){
+        try (Statement statement = this.connection.createStatement()) {
+            List<String> words = new ArrayList<String>();
+            ResultSet resultSet = statement.executeQuery("SELECT word FROM users WHERE id = " + userId);
+            while (resultSet.next()) {
+                words.add(resultSet.getString("word"));
+            }
+            return words;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    public void addWordToUser(Long userId, String word){
+        try (PreparedStatement statement = this.connection.prepareStatement(
+                "INSERT INTO words(`id`, `word`, 'isLearned') " +
+                        "VALUES(?, ?, ?)")) {
+            statement.setObject(1, userId);
+            statement.setObject(2, word);
+            statement.setObject(3, true);
             statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
