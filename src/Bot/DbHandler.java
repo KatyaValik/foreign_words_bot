@@ -21,23 +21,21 @@ public class DbHandler {
     private DbHandler() throws SQLException {
         DriverManager.registerDriver(new JDBC());
         this.connection = DriverManager.getConnection(CON_STR);
-        System.out.println(getAllWords());
     }
 
-    public List<String> getAllWords() {
+    public HashMap<String, String> getAllWords() {
         try (Statement statement = this.connection.createStatement()) {
-            List<String> words = new ArrayList<String>();
+            HashMap<String, String> words = new HashMap<String, String>();
             ResultSet resultSet = statement.executeQuery("SELECT word, translation FROM words");
             while (resultSet.next()) {
-                words.add(String.format("%s - %s",
-                        resultSet.getString("word"),
-                        resultSet.getString("translation")));
+                words.put(resultSet.getString("word"),
+                        resultSet.getString("translation"));
             }
             return words;
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return Collections.emptyList();
+            return new HashMap<String, String>();
         }
     }
 
@@ -63,7 +61,17 @@ public class DbHandler {
         }
     }
 
-    public List<String> getWordsFromUser(Long userId){
+    public HashMap<String, String> getWordsFromUser(Long userId){
+        List<String> words = getForeignWordsFromUser(userId);
+        HashMap<String, String> result = new HashMap<String, String>();
+        for (String word: words){
+            String translation = translate(word);
+            result.put(word, translation);
+        }
+        return result;
+    }
+
+    public List<String> getForeignWordsFromUser(Long userId){
         try (Statement statement = this.connection.createStatement()) {
             List<String> words = new ArrayList<String>();
             ResultSet resultSet = statement.executeQuery("SELECT word FROM users WHERE id = " + userId);
@@ -71,19 +79,29 @@ public class DbHandler {
                 words.add(resultSet.getString("word"));
             }
             return words;
-
         } catch (SQLException e) {
             e.printStackTrace();
-            return Collections.emptyList();
+            return new ArrayList<String>();
         }
     }
 
-    public void addWordToUser(Long userId, String word){
+    public String translate(String word) {
+        try (PreparedStatement statement = this.connection.prepareStatement("SELECT translation FROM words WHERE word = ?")) {
+                statement.setObject(1, word);
+                ResultSet translation = statement.executeQuery();
+                return translation.getString("translation");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public void addWordToUser(Long userId, String foreignWord){
         try (PreparedStatement statement = this.connection.prepareStatement(
                 "INSERT INTO words(`id`, `word`, 'isLearned') " +
                         "VALUES(?, ?, ?)")) {
             statement.setObject(1, userId);
-            statement.setObject(2, word);
+            statement.setObject(2, foreignWord);
             statement.setObject(3, true);
             statement.execute();
         } catch (SQLException e) {
