@@ -74,7 +74,7 @@ public class DbHandler {
     public List<String> getForeignWordsFromUser(Long userId){
         try (Statement statement = this.connection.createStatement()) {
             List<String> words = new ArrayList<String>();
-            ResultSet resultSet = statement.executeQuery("SELECT word FROM users WHERE id = " + userId);
+            ResultSet resultSet = statement.executeQuery("SELECT word FROM dictionaries WHERE userId = " + userId);
             while (resultSet.next()) {
                 words.add(resultSet.getString("word"));
             }
@@ -98,7 +98,7 @@ public class DbHandler {
 
     public void addWordToUser(Long userId, String foreignWord){
         try (PreparedStatement statement = this.connection.prepareStatement(
-                "INSERT INTO words(`id`, `word`, 'isLearned') " +
+                "INSERT INTO dictionaries(`userId`, `word`, 'isLearned') " +
                         "VALUES(?, ?, ?)")) {
             statement.setObject(1, userId);
             statement.setObject(2, foreignWord);
