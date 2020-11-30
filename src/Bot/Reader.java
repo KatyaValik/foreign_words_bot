@@ -14,10 +14,11 @@ import java.util.Random;
 public class Reader {
     private static final int max = Integer.parseInt(getStringFromWords(true));
     private static List<String> words = readAllWords();
+    public static final String path_to_words = "out/production/foreign_words_bot/Bot/words.txt";
 
     public static List<String> readAllWords(){
         List<String> lines = new ArrayList<>();
-        Path toWords = Paths.get(".\\src\\Bot\\words.txt");
+        Path toWords = Paths.get(path_to_words);
         try {
             lines = Files.readAllLines(toWords, Charset.defaultCharset());
             lines.remove(0);
@@ -30,13 +31,7 @@ public class Reader {
     }
 
     public static String getBotToken() {
-        String toToken = ".\\src\\Bot\\token.txt";
-        String token = "";
-        try {
-            token = new BufferedReader(new FileReader(toToken)).readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String token = "1411724979:AAHJ_hnVZ00woDAdnzVnAiuDC6rIEmQx6xs";
         return token;
     }
 
@@ -55,11 +50,10 @@ public class Reader {
     }
 
     public static String readToLine(int lineNumber){
-        String toWords = ".\\src\\Bot\\words.txt";
         String line = "";
         BufferedReader reader;
         try {
-            reader = new BufferedReader(new FileReader(toWords));
+            reader = new BufferedReader(new FileReader(path_to_words));
             line = reader.readLine();
             while (lineNumber > 0) {
                 lineNumber--;
