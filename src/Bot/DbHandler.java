@@ -3,7 +3,9 @@ package Bot;
 import org.sqlite.JDBC;
 
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class DbHandler {
 
