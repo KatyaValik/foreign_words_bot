@@ -3,12 +3,8 @@ package Bot;
 public enum Command {
     WORD{
         public String getTextMessage(Long chatId){
-            String message = Reader.getStringFromWords(false);
-            boolean thisWord = getChats().appendWordToChat(chatId, message);
-            while(!thisWord) {
-                message = Reader.getStringFromWords(false);
-                thisWord = getChats().appendWordToChat(chatId, message);
-            }
+            String message = getChats().getRandomNewWord(chatId);
+            getChats().appendWordToChat(chatId, message.split(" - ")[0]);
             return message;
         }
     },

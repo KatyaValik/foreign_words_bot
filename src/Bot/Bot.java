@@ -9,7 +9,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class Bot extends TelegramLongPollingBot {
     Commands commands = new Commands();
-    Chats chats = new Chats();
 
     public static void main(String[] args) {
         ApiContextInitializer.init();
@@ -25,12 +24,12 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "Vavtelbot";
+        return "foreign_words_bot";
     }
 
     @Override
     public String getBotToken() {
-        return Reader.getBotToken();
+        return Token.get();
     }
 
     @Override
