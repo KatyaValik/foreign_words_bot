@@ -4,6 +4,8 @@ public enum Command {
     WORD{
         public String getTextMessage(Long chatId){
             String message = getChats().getRandomNewWord(chatId);
+            if (message.isEmpty())
+                message = getChats().getRandomLearnedWord(chatId);
             getChats().appendWordToChat(chatId, message.split(" - ")[0]);
             return message;
         }

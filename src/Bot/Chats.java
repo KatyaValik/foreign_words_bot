@@ -39,8 +39,18 @@ public class Chats {
             dictionary.remove(key);
         }
         Set<String> keys = dictionary.keySet();
+        if (keys.isEmpty())
+            return "";
 
         Random rand = new Random();
+        String key = (String) keys.toArray()[rand.nextInt(keys.size())];
+        return key + " - " + dictionary.get(key);
+    }
+
+    public String getRandomLearnedWord(Long chatId){
+        HashMap<String, String> dictionary = db.getWordsFromUser(chatId);
+        Random rand = new Random();
+        Set<String>keys = dictionary.keySet();
         String key = (String) keys.toArray()[rand.nextInt(keys.size())];
         return key + " - " + dictionary.get(key);
     }
