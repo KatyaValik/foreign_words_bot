@@ -6,6 +6,8 @@ import java.util.*;
 public class Chats {
     private DbHandler db;
     private final int max;
+    private HashMap<Long, State> states = new HashMap<Long, State>();
+    private HashMap<Long, String> lastShown = new HashMap<Long, String>();
 
     public Chats() {
         try{
@@ -16,13 +18,20 @@ public class Chats {
         max = db.getAllWords().size();
     }
 
-    public boolean appendWordToChat(Long chatId, String word){
+    public void appendWordToChat(Long chatId, String word){
+        changeState(chatId, State.WAITING_FOR_ANSWER);
+        changeLastLearned(chatId, word);
+    }
+
+    public boolean appendLearnedWord(Long chatId, boolean isLearned){
+        String word = lastShown.get(chatId);
         HashMap<String, String> words = db.getWordsFromUser(chatId);
         String foreignWord = word.split(" - ")[0];
         if (!words.containsKey(foreignWord)){
-            db.addWordToUser(chatId, foreignWord);
+            db.addWordToUser(chatId, foreignWord, isLearned);
         }
-        return (max == words.size());
+        states.put(chatId, State.FREE);
+        return max == words.size();
     }
 
     public ArrayList<String> getAllWords(Long chatId){
@@ -53,5 +62,21 @@ public class Chats {
         Set<String>keys = dictionary.keySet();
         String key = (String) keys.toArray()[rand.nextInt(keys.size())];
         return key + " - " + dictionary.get(key);
+    }
+
+    public State getCurrentState(Long chatId){
+        if (states.containsKey(chatId)){
+            return states.get(chatId);
+        }
+        states.put(chatId, State.FREE);
+        return State.FREE;
+    }
+
+    public void changeState(Long chatId, State newState){
+        states.put(chatId, newState);
+    }
+
+    public void changeLastLearned(Long chatId, String newLearned){
+        lastShown.put(chatId, newLearned);
     }
 }
