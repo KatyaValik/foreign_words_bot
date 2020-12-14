@@ -14,7 +14,7 @@ import java.util.Random;
 public class Reader {
     private static final int max = Integer.parseInt(getStringFromWords(true));
     private static List<String> words = readAllWords();
-    public static final String path_to_words = "out/production/foreign_words_bot/Bot/words.txt";
+    public static final String path_to_words = "out/production/bot/Bot/words.txt";
 
     public static List<String> readAllWords(){
         List<String> lines = new ArrayList<>();
@@ -31,7 +31,7 @@ public class Reader {
     }
 
     public static String getBotToken() {
-        String token = "1411724979:AAHJ_hnVZ00woDAdnzVnAiuDC6rIEmQx6xs";
+        String token = "1226002365:AAFx_iTVaZCwtoV4eiPSl3vy9daZaZ4t58I";
         return token;
     }
 
