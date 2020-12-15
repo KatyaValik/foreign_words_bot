@@ -9,7 +9,7 @@ import java.util.List;
 
 public class DbHandler {
 
-    private static final String CON_STR = "jdbc:sqlite:.\\src\\Bot\\words.db";
+    private static final String CON_STR = "jdbc:sqlite:/home/katerina/new_work/java/bot/src/Bot/words.db";
     private static DbHandler instance = null;
 
     public static synchronized DbHandler getInstance() throws SQLException {
@@ -89,22 +89,22 @@ public class DbHandler {
 
     public String translate(String word) {
         try (PreparedStatement statement = this.connection.prepareStatement("SELECT translation FROM words WHERE word = ?")) {
-                statement.setObject(1, word);
-                ResultSet translation = statement.executeQuery();
-                return translation.getString("translation");
+            statement.setObject(1, word);
+            ResultSet translation = statement.executeQuery();
+            return translation.getString("translation");
         } catch (SQLException e) {
             e.printStackTrace();
             return "";
         }
     }
 
-    public void addWordToUser(Long userId, String foreignWord){
+    public void addWordToUser(Long userId, String foreignWord, boolean isLearned){
         try (PreparedStatement statement = this.connection.prepareStatement(
                 "INSERT INTO dictionaries(`userId`, `word`, 'isLearned') " +
                         "VALUES(?, ?, ?)")) {
             statement.setObject(1, userId);
             statement.setObject(2, foreignWord);
-            statement.setObject(3, true);
+            statement.setObject(3, isLearned);
             statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();

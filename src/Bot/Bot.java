@@ -10,10 +10,10 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Bot extends TelegramLongPollingBot {
     Commands commands = new Commands();
-    Chats chats = new Chats();
     ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
 
     public static void main(String[] args) {
@@ -30,12 +30,12 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "@foreign_words_bot";
+        return "foreign_words_bot";
     }
 
     @Override
     public String getBotToken() {
-        return Reader.getBotToken();
+        return Token.get();
     }
 
     @Override
@@ -47,26 +47,29 @@ public class Bot extends TelegramLongPollingBot {
 
             SendMessage message = new SendMessage()
                     .setChatId(chatId)
-                    .setText(getMessage(update.getMessage().getText()));
+                    .setText(messageText);
             message.setReplyMarkup(replyKeyboardMarkup);
             try {
-                message.setText(getMessage(messageText));
+                message.setText(getMessage(userMessage, messageText, chatId));
                 execute(message);
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
         }
     }
-    public String getMessage(String msg) {
-        ArrayList<KeyboardRow> keyboard = new ArrayList<>();
+
+    public String getMessage(String msg, String msgText, long chatId){
+        ArrayList<KeyboardRow> keyboard = new ArrayList<KeyboardRow>();
         KeyboardRow keyboardFirstRow = new KeyboardRow();
         KeyboardRow keyboardSecondRow = new KeyboardRow();
 
         replyKeyboardMarkup.setSelective(true);
         replyKeyboardMarkup.setResizeKeyboard(true);
-        replyKeyboardMarkup.setOneTimeKeyboard(false);
+        replyKeyboardMarkup.setOneTimeKeyboard(true);
 
-        if (msg.equals("help") || msg.equals("all") || (msg.equals("/start"))) {
+        State state = commands.getState(chatId);
+
+        if(state.equals(State.FREE)){
             keyboard.clear();
             keyboardFirstRow.add("word");
             keyboardFirstRow.add("all");
@@ -74,29 +77,19 @@ public class Bot extends TelegramLongPollingBot {
             keyboard.add(keyboardFirstRow);
             keyboard.add(keyboardSecondRow);
             replyKeyboardMarkup.setKeyboard(keyboard);
-            return "Choose...";
+            return msgText;
         }
-        if (msg.equals("word")) {
+
+        if(state.equals(State.WAITING_FOR_ANSWER)) {
             keyboard.clear();
-            keyboardFirstRow.add("I know this word");
-            keyboardFirstRow.add("I don't know this word");
+            keyboardFirstRow.add("yes");
+            keyboardFirstRow.add("no");
             keyboardSecondRow.add("help");
             keyboard.add(keyboardFirstRow);
             keyboard.add(keyboardSecondRow);
             replyKeyboardMarkup.setKeyboard(keyboard);
-            return "Choose ...";
+            return msgText;
         }
-        if (msg.equals("I know this word") || (msg.equals("I don't know this word"))
-        ) {
-            keyboard.clear();
-            keyboardFirstRow.add("word");
-            keyboardFirstRow.add("all");
-            keyboardSecondRow.add("help");
-            keyboard.add(keyboardFirstRow);
-            keyboard.add(keyboardSecondRow);
-            replyKeyboardMarkup.setKeyboard(keyboard);
-            return "Choose...";
-        }
-    return "if problems...";
+        return "Если возникли проблемы, воспользуйтесь /start";
     }
 }
